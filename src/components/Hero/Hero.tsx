@@ -23,9 +23,9 @@ const Hero = (props: Props) => {
               className="py-5 px-10 text-2xl font-bold text-white bg-lightGreen rounded lg:py-4 hover:opacity-70"
             >
             </Link> */}
-            <a href="" className="py-5 px-10 text-2xl font-bold text-white bg-lightGreen">
+            <Link to={`/search`} className="py-5 px-10 text-2xl font-bold text-white bg-lightGreen">
               Get Started
-            </a>
+            </Link>
           </div>
         </div>
         <div className="mb-24 mx-auto md:w-180 md:px-10 lg:mb-0 lg:w-1/2">

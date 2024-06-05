@@ -8,8 +8,8 @@ interface SearchResponse {
 export const searchCompanies = async (query: string) => {
     try {
         const data = await axios.get<SearchResponse>(          
-          `https://financialmodelingprep.com/api/v3/search-name?query=${query}&limit=10&exchange=NASDAQ&apikey=${'2bDLNutIiJ9w7Ea8nTgcLLAMV3hXRZDY'}`
-        );                
+          `https://financialmodelingprep.com/api/v3/search-name?query=${query}&limit=10&exchange=NASDAQ&apikey=${process.env.REACT_APP_API_KEY}`
+        );                        
         return data;
     }catch(error){
         if (axios.isAxiosError(error)){
