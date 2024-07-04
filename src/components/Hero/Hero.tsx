@@ -29,7 +29,7 @@ const Hero = (props: Props) => {
           </div>
         </div>
         <div className="mb-24 mx-auto md:w-180 md:px-10 lg:mb-0 lg:w-1/2">
-          <img src={hero} alt="" />
+          <img src={hero} alt="What ever, just to see" />
         </div>
       </div>
     </section>
