@@ -1,72 +1,100 @@
-import React, { ChangeEvent, SyntheticEvent, useState } from 'react'
-import { CompanySearch } from '../../company';
-import { searchCompanies } from '../../Api';
-/* import Navbar from '../../components/Navbar/Navbar'; */
-/* import Hero from '../../components/Hero/Hero'; */
-import Search from '../../components/Search/Search';
-import ListPortfolio from '../../components/Portfolio/ListPortfolio/ListPortfolio';
-import CardList from '../../components/CardList/CardList';
+import React, { useState, ChangeEvent, SyntheticEvent, useEffect } from "react";
+import Navbar from "../../Components/Navbar/Navbar";
+import { CompanySearch } from "../../company";
+import { searchCompanies } from "../../api";
+import Search from "../../Components/Search/Search";
+import ListPortfolio from "../../Components/Portfolio/ListPortfolio/ListPortfolio";
+import CardList from "../../Components/CardList/CardList";
+import { PortfolioGet } from "../../Models/Portfolio";
+import {
+  portfolioAddAPI,
+  portfolioDeleteAPI,
+  portfolioGetAPI,
+} from "../../Services/PortfolioService";
+import { toast } from "react-toastify";
 
 interface Props {}
 
 const SearchPage = (props: Props) => {
   const [search, setSearch] = useState<string>("");
-  const [portfolioValues, setPortfolioValues] = useState<string[]>([]);
+  const [portfolioValues, setPortfolioValues] = useState<PortfolioGet[] | null>(
+    []
+  );
   const [searchResult, setSearchResult] = useState<CompanySearch[]>([]);
-  const [serverError, setServerError] = useState<string>("");
-  
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getPortfolio();
+  }, []);
+
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    console.log(e);
-  }
+  };
 
-  const onPortfolioCreate = (e: any /* SyntheticEvent */) => {
+  const getPortfolio = () => {
+    portfolioGetAPI()
+      .then((res) => {
+        if (res?.data) {
+          setPortfolioValues(res?.data);
+        }
+      })
+      .catch((e) => {
+        setPortfolioValues(null);
+      });
+  };
+
+  const onPortfolioCreate = (e: any) => {
     e.preventDefault();
-    const exists = portfolioValues.find((value)=> value===e.target[0].value)
-    if (exists) return;
-    /* console.log(e); */
-    const updatedPortfolio = [...portfolioValues, e.target[0].value];
-    setPortfolioValues(updatedPortfolio);
+    portfolioAddAPI(e.target[0].value)
+      .then((res) => {
+        if (res?.status === 204) {
+          toast.success("Stock added to portfolio!");
+          getPortfolio();
+        }
+      })
+      .catch((e) => {
+        toast.warning("Could not add stock to portfolio!");
+      });
   };
 
   const onPortfolioDelete = (e: any) => {
     e.preventDefault();
-    const removed = portfolioValues.filter((value)=>{
-      return value !== e.target[0].value;
-    })
-    setPortfolioValues(removed);
+    portfolioDeleteAPI(e.target[0].value).then((res) => {
+      if (res?.status == 200) {
+        toast.success("Stock deleted from portfolio!");
+        getPortfolio();
+      }
+    });
   };
-  
+
   const onSearchSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     const result = await searchCompanies(search);
-    if (typeof result==="string"){
-      setServerError(result);      
-    }else if (Array.isArray(result.data)){
-      setSearchResult(result.data);            
+    //setServerError(result.data);
+    if (typeof result === "string") {
+      setServerError(result);
+    } else if (Array.isArray(result.data)) {
+      setSearchResult(result.data);
     }
-    /* console.log(searchResult); */
   };
   return (
-    <div className="App">
-    {/* <Navbar/> */}
-    {/* <Hero /> */}
-    <Search 
-        onSearchSubmit={onSearchSubmit} 
-        search={search} 
+    <>
+      <Search
+        onSearchSubmit={onSearchSubmit}
+        search={search}
         handleSearchChange={handleSearchChange}
-     />
-    <ListPortfolio 
-        portfolioValues={portfolioValues} 
-        onPortfolioDelete={onPortfolioDelete}/>
-    <CardList 
-        searchResults={searchResult} 
+      />
+      <ListPortfolio
+        portfolioValues={portfolioValues!}
+        onPortfolioDelete={onPortfolioDelete}
+      />
+      <CardList
+        searchResults={searchResult}
         onPortfolioCreate={onPortfolioCreate}
-     />
-    {serverError && <h1>{ serverError }</h1>}
-    {/* <CardList /> */}
-  </div>
-  )
-}
+      />
+      {serverError && <div>Unable to connect to API</div>}
+    </>
+  );
+};
 
 export default SearchPage;

@@ -1,14 +1,14 @@
-import React, { SyntheticEvent } from 'react'
+import { SyntheticEvent } from "react";
 
-interface Props  {
-    onPortFolioCreate: (e:SyntheticEvent)=>void;
-    symbol: string;
+interface Props {
+  onPortfolioCreate: (e: SyntheticEvent) => void;
+  symbol: string;
 }
 
-const AddPortFolio = ({onPortFolioCreate, symbol}: Props) => {
+const AddPortfolio = ({ onPortfolioCreate, symbol }: Props) => {
   return (
     <div className="flex flex-col items-center justify-end flex-1 space-x-4 space-y-2 md:flex-row md:space-y-0">
-      <form onSubmit={onPortFolioCreate}>
+      <form onSubmit={onPortfolioCreate}>
         <input readOnly={true} hidden={true} value={symbol} />
         <button
           type="submit"
@@ -18,11 +18,7 @@ const AddPortFolio = ({onPortFolioCreate, symbol}: Props) => {
         </button>
       </form>
     </div>
-    /*<form onSubmit={onPortFolioCreate}>
-        <input readOnly={true} hidden={true} value={symbol} />
-        <button type="submit">Add</button>
-    </form>*/
   );
 };
 
-export default AddPortFolio;
+export default AddPortfolio;
